@@ -5,9 +5,22 @@ const fs = require("fs/promises"); // Importamos fs/promises para trabajar con e
 // Ruta para listar todos los productos
 router.get("/", async (req, res) => {
   try {
-    const productsData = await fs.readFile("./src/data/products.json", "utf-8"); // Leemos el archivo productos.json
-    const products = JSON.parse(productsData); // Convertimos los datos del archivo a un objeto JavaScript
-    res.json(products); // Respondemos con la lista de productos en formato JSON
+    const productsData = await fs.readFile(
+      "./src/data/products.json",
+      "utf-8"
+    );
+    const products = JSON.parse(productsData);
+
+    // Obtén el valor del parámetro "?limit" de la URL y conviértelo en un número entero
+    const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
+
+    if (!isNaN(limit) && limit > 0) {
+      // Si el parámetro "?limit" es un número válido y mayor que 0, limita la lista de productos
+      const limitedProducts = products.slice(0, limit);
+      res.json(limitedProducts);
+    } else {
+      res.json(products);
+    }
   } catch (error) {
     res.status(500).json({ error: "Error al obtener la lista de productos" });
   }
