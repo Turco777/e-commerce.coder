@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "title": "Producto 1",
+    "description": "Descripción del Producto 1",
+    "code": "P001",
+    "price": 100.0,
+    "status": true,
+    "stock": 50,
+    "category": "Electrónica",
+    "thumbnails": [
+      "ruta-imagen-1.jpg",
+      "ruta-imagen-2.jpg"
+    ]
+  },
+  {
+    "id": "2",
+    "title": "Producto 2",
+    "description": "Descripción del Producto 2",
+    "code": "P002",
+    "price": 50.0,
+    "status": true,
+    "stock": 100,
+    "category": "Ropa",
+    "thumbnails": [
+      "ruta-imagen-3.jpg",
+      "ruta-imagen-4.jpg"
+    ]
+  }
+]

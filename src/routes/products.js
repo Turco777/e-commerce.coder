@@ -5,10 +5,7 @@ const fs = require("fs/promises"); // Importamos fs/promises para trabajar con e
 // Ruta para listar todos los productos
 router.get("/", async (req, res) => {
   try {
-    const productsData = await fs.readFile(
-      "./src/data/products.json",
-      "utf-8"
-    ); // Leemos el archivo productos.json
+    const productsData = await fs.readFile("./src/data/products.json", "utf-8"); // Leemos el archivo productos.json
     const products = JSON.parse(productsData); // Convertimos los datos del archivo a un objeto JavaScript
     res.json(products); // Respondemos con la lista de productos en formato JSON
   } catch (error) {
@@ -40,10 +37,7 @@ router.get("/:pid", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const newProduct = req.body; // Obtenemos el nuevo producto desde el cuerpo de la solicitud (request)
-    const productsData = await fs.readFile(
-      "./src/data/products.json",
-      "utf-8"
-    );
+    const productsData = await fs.readFile("./src/data/products.json", "utf-8");
     const products = JSON.parse(productsData);
     // Generamos un nuevo ID para el producto (este paso puede variar según la implementación)
     const newProductId = generateNewProductId();
@@ -65,10 +59,7 @@ router.put("/:pid", async (req, res) => {
   try {
     const productId = req.params.pid; // Obtenemos el ID del producto desde los parámetros de la URL
     const updatedProduct = req.body; // Obtenemos los datos actualizados del producto desde el cuerpo de la solicitud (request)
-    const productsData = await fs.readFile(
-      "./src/data/products.json",
-      "utf-8"
-    );
+    const productsData = await fs.readFile("./src/data/products.json", "utf-8");
     const products = JSON.parse(productsData);
     const existingProductIndex = products.findIndex((p) => p.id === productId); // Buscamos el índice del producto existente
     if (existingProductIndex !== -1) {
@@ -95,10 +86,7 @@ router.put("/:pid", async (req, res) => {
 router.delete("/:pid", async (req, res) => {
   try {
     const productId = req.params.pid; // Obtenemos el ID del producto desde los parámetros de la URL
-    const productsData = await fs.readFile(
-      "./src/data/products.json",
-      "utf-8"
-    );
+    const productsData = await fs.readFile("./src/data/products.json", "utf-8");
     const products = JSON.parse(productsData);
     const updatedProducts = products.filter((p) => p.id !== productId); // Filtramos los productos para excluir el producto a eliminar
     if (updatedProducts.length < products.length) {
