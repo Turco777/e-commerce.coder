@@ -59,21 +59,30 @@
   background-color: rgb(242, 73, 73);
   color: white;
 }
-
+/* 
 .container {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  width: 95%;
-  margin: 20px;
   flex-direction: row;
   flex-wrap: wrap;
   align-content: center;
+} */
+
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  align-content: center;
+
 }
+
 
 .card {
   display: flex;
-  width: 200px;
+  width: 270px;
   height: 300px;
   border-radius: 15px;
   margin: 5px 15px;
