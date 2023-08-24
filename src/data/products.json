@@ -74,7 +74,7 @@
 		"description": "Cerveza Corona",
 		"stock": "250",
 		"thumbnail": "https://gobar.vtexassets.com/arquivos/ids/159729/01020100063.jpg?v=638107906155530000",
-		"category": "Bebidas con alcohol",
+		"category": "Bebidas",
 		"price": "549.35",
 		"code": "bir231",
 		"id": 8
@@ -84,7 +84,7 @@
 		"description": "Vino Toro",
 		"stock": "90",
 		"thumbnail": "https://statics.dinoonline.com.ar/imagenes/full_600x600_ma/3062462_f.jpg",
-		"category": "Bebidas con alcohol",
+		"category": "Bebidas",
 		"price": "1000",
 		"code": "vin211",
 		"id": 9
@@ -94,7 +94,7 @@
 		"description": "Fernet Branca",
 		"stock": "90",
 		"thumbnail": "https://www.gustoargentino.com/cdn/shop/files/fernet-branca-700ml_1.png?v=1686748078&width=480",
-		"category": "Bebidas con alcohol",
+		"category": "Bebidas",
 		"price": "100",
 		"code": "fbc336",
 		"id": 10
