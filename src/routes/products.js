@@ -1,126 +1,68 @@
-const express = require("express");
-const router = express.Router();
-const fs = require("fs/promises"); // Importamos fs/promises para trabajar con el sistema de archivos de Node.js de forma asíncrona
+import { Router } from "express";
+import ProductManager from "../managers/productsManager.js";
+import { __dirname } from "../utils.js";
 
-// Ruta para listar todos los productos
+const manager = new ProductManager(__dirname + "/data/products.json");
+const router = Router();
+
 router.get("/", async (req, res) => {
-  try {
-    const productsData = await fs.readFile(
-      "./src/data/products.json",
-      "utf-8"
-    );
-    const products = JSON.parse(productsData);
-
-    // Obtén el valor del parámetro "?limit" de la URL y conviértelo en un número entero
-    const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
-
-    if (!isNaN(limit) && limit > 0) {
-      // Si el parámetro "?limit" es un número válido y mayor que 0, limita la lista de productos
-      const limitedProducts = products.slice(0, limit);
-      res.json(limitedProducts);
-    } else {
-      res.json(products);
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener la lista de productos" });
+  const { limit } = req.query;
+  const products = await manager.getProducts();
+  if (limit) {
+    const limitedProducts = products.slice(0, limit);
+    res.status(200).json(limitedProducts);
+  } else if (!limit) {
+    res.status(200).json(products);
+  } else {
+    res.status(400).json({ message: "Error al obtener los productos" });
   }
 });
-
-// Ruta para obtener un producto por su ID
 router.get("/:pid", async (req, res) => {
-  try {
-    const productId = req.params.pid; // Obtenemos el ID del producto desde los parámetros de la URL
-    const productsData = await fs.readFile(
-      "./src/data/productss.json",
-      "utf-8"
-    );
-    const products = JSON.parse(productsData);
-    const product = products.find((p) => p.id === productId); // Buscamos el producto por su ID
-    if (product) {
-      res.json(product); // Respondemos con el producto encontrado en formato JSON
-    } else {
-      res.status(404).json({ error: "Producto no encontrado" });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener el producto" });
+  const id = parseInt(req.params.pid);
+  const product = await manager.getProductsById(id);
+  if (product === "Not Found") {
+    res.status(400).json({ message: "Producto no encontrado" });
+  } else if (product) {
+    res.status(200).json(product);
+  } else {
+    res.status(400).json({ message: "Producto no encontrado" });
   }
 });
 
-// Ruta para agregar un nuevo producto
 router.post("/", async (req, res) => {
   try {
-    const newProduct = req.body; // Obtenemos el nuevo producto desde el cuerpo de la solicitud (request)
-    const productsData = await fs.readFile("./src/data/products.json", "utf-8");
-    const products = JSON.parse(productsData);
-    // Generamos un nuevo ID para el producto (este paso puede variar según la implementación)
-    const newProductId = generateNewProductId();
-    newProduct.id = newProductId;
-    products.push(newProduct); // Agregamos el nuevo producto a la lista de productos
-    await fs.writeFile(
-      "./src/data/products.json",
-      JSON.stringify(products, null, 2),
-      "utf-8"
-    ); // Actualizamos el archivo productos.json
-    res.status(201).json(newProduct); // Respondemos con el nuevo producto en formato JSON
+    const product = await manager.addProduct(req.body);
+    if (product === "The insert code already exists") {
+      res.status(400).json({ message: "Error al crear el producto", product });
+    } else if (product === "Complete all fields") {
+      res.status(400).json({ message: "Error al crear el producto", product });
+    } else {
+      res.status(201).json({ message: "Producto creado", product });
+    }
   } catch (error) {
-    res.status(500).json({ error: "Error al agregar el producto" });
+    throw new error("Error al crear el producto", error);
   }
 });
-
-// Ruta para actualizar un producto por su ID
 router.put("/:pid", async (req, res) => {
-  try {
-    const productId = req.params.pid; // Obtenemos el ID del producto desde los parámetros de la URL
-    const updatedProduct = req.body; // Obtenemos los datos actualizados del producto desde el cuerpo de la solicitud (request)
-    const productsData = await fs.readFile("./src/data/products.json", "utf-8");
-    const products = JSON.parse(productsData);
-    const existingProductIndex = products.findIndex((p) => p.id === productId); // Buscamos el índice del producto existente
-    if (existingProductIndex !== -1) {
-      // Actualizamos el producto en la lista de productos
-      products[existingProductIndex] = {
-        ...products[existingProductIndex],
-        ...updatedProduct,
-      };
-      await fs.writeFile(
-        "./src/data/products.json",
-        JSON.stringify(products, null, 2),
-        "utf-8"
-      ); // Actualizamos el archivo productos.json
-      res.json(products[existingProductIndex]); // Respondemos con el producto actualizado en formato JSON
-    } else {
-      res.status(404).json({ error: "Producto no encontrado" });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Error al actualizar el producto" });
+  const id = parseInt(req.params.pid);
+  const product = await manager.updateProduct(id, req.body);
+  if (product) {
+    res.status(200).json({ message: "Producto actualizado", product });
+  } else {
+    res.status(400).json({ message: "Error al actualizar el producto" });
   }
 });
 
-// Ruta para eliminar un producto por su ID
 router.delete("/:pid", async (req, res) => {
-  try {
-    const productId = req.params.pid; // Obtenemos el ID del producto desde los parámetros de la URL
-    const productsData = await fs.readFile("./src/data/products.json", "utf-8");
-    const products = JSON.parse(productsData);
-    const updatedProducts = products.filter((p) => p.id !== productId); // Filtramos los productos para excluir el producto a eliminar
-    if (updatedProducts.length < products.length) {
-      await fs.writeFile(
-        "./src/data/products.json",
-        JSON.stringify(updatedProducts, null, 2),
-        "utf-8"
-      ); // Actualizamos el archivo productos.json
-      res.json({ message: "Producto eliminado correctamente" });
-    } else {
-      res.status(404).json({ error: "Producto no encontrado" });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "Error al eliminar el producto" });
+  const id = parseInt(req.params.pid);
+  const product = await manager.deleteProduct(id);
+  if (product === `Can't find product with id : ${id}`) {
+    res.status(400).json({ message: "Error al eliminar el producto", product });
+  } else if (product) {
+    res.status(200).json({ message: "Producto eliminado", product });
+  } else {
+    res.status(400).json({ message: "Error al eliminar el producto" });
   }
 });
 
-// Función para generar un nuevo ID para un producto (puede variar según la implementación)
-function generateNewProductId() {
-  // Implementación para generar un nuevo ID único (puede variar según la implementación)
-  return Date.now().toString();
-}
-
-module.exports = router;
+export default router;
